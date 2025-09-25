@@ -11,7 +11,7 @@ app.use(cors());
 
 app.use(express.json());
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const OPENAI_API_KEY = process.env.OPENAI_API;
 
 app.post("/session", async (req, res) => {
   try {
