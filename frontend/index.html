@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Voice Chat Interface</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* CSS will go here */
+    </style>
+</head>
+<style>
+    /* CSS Variables for Theming */
+    :root {
+        --primary-color: #007bff; /* Vibrant Blue */
+        --accent-color: #17a2b8; /* Secondary Cyan */
+        --bg-dark: #1e2124; /* Dark background */
+        --bg-light: #282b30; /* Lighter section background */
+        --text-color: #f1f1f1; /* Light text */
+        --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Base Styles */
+    body {
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg-dark);
+        color: var(--text-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        text-align: center;
+    }
+
+    /* Container for the App */
+    .chat-container {
+        background-color: var(--bg-light);
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: var(--card-shadow);
+        width: 100%;
+        max-width: 450px; /* Max width for professional look */
+        transform: translateY(0);
+        transition: transform 0.5s ease;
+    }
+
+    /* Header Styling */
+    .chat-header h1 {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+        color: var(--primary-color);
+    }
+    .header-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        color: var(--accent-color);
+        animation: pulse 2s infinite ease-in-out;
+    }
+    .subtitle {
+        font-weight: 300;
+        color: #aaaaaa;
+        margin-top: 0;
+        margin-bottom: 30px;
+    }
+
+    /* Start Button */
+    .start-button {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+        margin: 20px 0;
+        width: 100%;
+    }
+    .start-button:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 123, 255, 0.6);
+    }
+    .start-button:active {
+        transform: translateY(0);
+    }
+    .start-button i {
+        margin-right: 10px;
+    }
+    .start-button.loading {
+        background-color: var(--accent-color);
+    }
+
+    /* Status Display */
+    .status-display {
+        background: var(--bg-dark);
+        border: 1px solid #3a3f45;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        transition: background-color 0.3s, border-color 0.3s;
+    }
+    .status-icon {
+        font-size: 1.5rem;
+        color: var(--accent-color);
+    }
+    .status-text {
+        font-weight: 600;
+        color: var(--text-color);
+    }
+    /* Specific status colors */
+    .fa-times-circle { color: #dc3545; } /* Red for error */
+    .fa-comment-dots { color: #28a745; } /* Green for success */
+    .fa-cog, .fa-wifi, .fa-paper-plane { color: #ffc107; } /* Yellow for loading/progress */
+    
+    /* Subtle Tip Text */
+    .tip-text {
+        font-size: 0.85rem;
+        color: #777;
+        margin-top: 15px;
+    }
+
+    /* Speaking Indicator (Waveform Animation) */
+    .speaking-indicator {
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        height: 30px;
+        margin-bottom: 20px;
+        gap: 5px;
+        opacity: 1;
+        transition: opacity 0.5s;
+    }
+    .speaking-indicator.hidden {
+        opacity: 0;
+        height: 0;
+        margin-bottom: 0;
+        visibility: hidden;
+    }
+    .speaking-indicator .bar {
+        width: 4px;
+        height: 4px;
+        background: var(--primary-color);
+        border-radius: 2px;
+        animation: speak 1.5s infinite ease-in-out;
+    }
+    .speaking-indicator .bar:nth-child(2) { animation-delay: 0.2s; }
+    .speaking-indicator .bar:nth-child(3) { animation-delay: 0.4s; }
+    .speaking-indicator .bar:nth-child(4) { animation-delay: 0.6s; }
+
+    /* Keyframe Animations */
+    @keyframes speak {
+        0%, 100% { height: 4px; }
+        50% { height: 25px; }
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.8; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 600px) {
+        .chat-container {
+            margin: 20px;
+            padding: 30px 20px;
+        }
+        .chat-header h1 {
+            font-size: 1.8rem;
+        }
+        .start-button {
+            padding: 12px 20px;
+            font-size: 1rem;
+        }
+    }
+</style>
+<body>
+    <div class="chat-container">
+        <header class="chat-header">
+            <i class="fas fa-headset header-icon"></i>
+            <h1>Talk with **AI**</h1>
+            <p class="subtitle">Experience real-time, high-fidelity voice conversation.</p>
+        </header>
+
+        <main class="chat-main">
+            <div id="status-display" class="status-display">
+                <i class="fas fa-power-off status-icon initial"></i>
+                <p class="status-text initial-text">Ready to connect.</p>
+            </div>
+
+            <div id="speaking-indicator" class="speaking-indicator hidden">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+
+            <button id="start" class="start-button">
+                <i class="fas fa-microphone-alt"></i> 
+                Start Conversation
+            </button>
+
+            <p class="tip-text">Click the button to establish a WebRTC connection.</p>
+        </main>
+    </div>
+
+    <script>
+        const startButton = document.getElementById("start");
+        const statusDisplay = document.getElementById("status-display");
+        const speakingIndicator = document.getElementById("speaking-indicator");
+        
+        // Helper function to update the UI
+        function updateStatus(iconClass, text, isAnimating = false) {
+            const iconEl = statusDisplay.querySelector('.status-icon');
+            const textEl = statusDisplay.querySelector('.status-text');
+
+            // Reset classes
+            iconEl.className = 'status-icon';
+            textEl.className = 'status-text';
+            speakingIndicator.classList.add('hidden');
+
+            // Set new content
+            iconEl.classList.add(iconClass);
+            textEl.textContent = text;
+            
+            // Apply animation class if needed
+            if (isAnimating) {
+                statusDisplay.classList.add('loading');
+                startButton.disabled = true;
+                startButton.classList.add('loading');
+                startButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
+            } else {
+                statusDisplay.classList.remove('loading');
+                startButton.disabled = false;
+                startButton.classList.remove('loading');
+                startButton.innerHTML = '<i class="fas fa-microphone-alt"></i> Start Conversation';
+                
+                // Show speaking indicator when connected
+                if (iconClass === 'fa-comment-dots') {
+                    speakingIndicator.classList.remove('hidden');
+                }
+            }
+        }
+        
+        async function init() {
+            updateStatus('fa-cog', 'Establishing session...', true);
+
+            try {
+                // Get ephemeral key from your server
+                const resp = await fetch("http://localhost:3000/session", { method: "POST" });
+                if (!resp.ok) throw new Error("Failed to get session key.");
+                const data = await resp.json();
+
+                updateStatus('fa-wifi', 'Setting up connection...');
+                
+                // Create PeerConnection
+                const pc = new RTCPeerConnection();
+
+                // Play GPT audio stream
+                const audioEl = document.createElement("audio");
+                audioEl.autoplay = true;
+                pc.ontrack = (event) => {
+                    audioEl.srcObject = event.streams[0];
+                };
+
+                // Capture microphone
+                const ms = await navigator.mediaDevices.getUserMedia({ audio: true });
+                ms.getTracks().forEach(track => pc.addTrack(track, ms));
+
+                // Create data channel (optional for text exchange)
+                const dc = pc.createDataChannel("oai-events");
+                dc.onmessage = (event) => console.log("GPT:", event.data);
+
+                // Create SDP offer
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+
+                updateStatus('fa-paper-plane', 'Negotiating SDP...');
+
+                // Send offer to OpenAI Realtime API
+                const baseUrl = "https://api.openai.com/v1/realtime";
+                const sdpResponse = await fetch(
+                    `${baseUrl}?model=gpt-4o-realtime-preview`,
+                    {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${data.client_secret.value}`,
+                            "Content-Type": "application/sdp",
+                        },
+                        body: offer.sdp,
+                    }
+                );
+                
+                if (!sdpResponse.ok) throw new Error("API call failed.");
+
+                // Get GPT’s answer and set as remote description
+                const answer = {
+                    type: "answer",
+                    sdp: await sdpResponse.text(),
+                };
+                await pc.setRemoteDescription(answer);
+
+                updateStatus('fa-comment-dots', 'Conversation Started! **You are connected.**');
+                console.log("✅ Conversation started!");
+            } catch (error) {
+                console.error("Connection failed:", error);
+                updateStatus('fa-times-circle', 'Connection Failed. Try again.');
+            }
+        }
+
+        startButton.addEventListener("click", init);
+    </script>
+</body>
+</html>
