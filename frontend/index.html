@@ -258,7 +258,7 @@
 
             try {
                 // Get ephemeral key from your server
-                const resp = await fetch("http://localhost:3000/session", { method: "POST" });
+                const resp = await fetch("https://speack-with-gpt.vercel.app/backend/session", { method: "POST" });
                 if (!resp.ok) throw new Error("Failed to get session key.");
                 const data = await resp.json();
 
