@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public")); // serve frontend
 
-const OPENAI_API_KEY = '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';
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 app.post("/session", async (req, res) => {
   try {
