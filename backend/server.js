@@ -5,11 +5,9 @@ import cors from "cors";
 
 dotenv.config();
 const app = express();
-
-// ✅ Allow all origins (for development only)
 app.use(cors());
-
 app.use(express.json());
+app.use(express.static("public")); // serve frontend
 
 const OPENAI_API_KEY = process.env.OPENAI_API;
 
@@ -23,7 +21,7 @@ app.post("/session", async (req, res) => {
       },
       body: JSON.stringify({
         model: "gpt-4o-realtime-preview",
-        voice: "verse",
+        voice: "alloy" // English voice
       }),
     });
 
@@ -35,6 +33,5 @@ app.post("/session", async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log("✅ Server running on http://localhost:3000");
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
